@@ -1,0 +1,9 @@
+@echo off
+echo Flushing DNS cache...
+ipconfig /flushdns
+echo Registering DNS...
+ipconfig /registerdns
+echo Renewing IP Address...
+ipconfig /release
+ipconfig /renew
+echo Network optimization complete!

@@ -1,0 +1,28 @@
+<#
+.SYNOPSIS
+    Universal MSI Installer Script.
+.DESCRIPTION
+    Dynamically finds and silently installs any .msi package dropped into C:\Installers.
+#>
+
+$InstallerFolder = "C:\Installers"
+
+# Find any .msi file in the folder
+$MsiFile = Get-ChildItem -Path $InstallerFolder -Filter "*.msi" | Select-Object -First 1
+
+if ($MsiFile) {
+    Write-Host "Found MSI installer: $($MsiFile.Name). Starting silent installation..."
+    
+    # Universal Microsoft standard silent arguments
+    $Arguments = @('/i', "`"$($MsiFile.FullName)`"", '/qn', '/norestart')
+    
+    $Process = Start-Process -FilePath "msiexec.exe" -ArgumentList $Arguments -Wait -NoNewWindow -PassThru
+    
+    if ($Process.ExitCode -eq 0 -or $Process.ExitCode -eq 3010) {
+        Write-Host "Installation completed successfully (Exit Code: $($Process.ExitCode))."
+    } else {
+        Write-Error "Installation failed with Exit Code: $($Process.ExitCode)"
+    }
+} else {
+    Write-Error "No .msi file found in $InstallerFolder."
+}

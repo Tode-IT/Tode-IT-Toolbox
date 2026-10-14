@@ -95,3 +95,18 @@ Understanding how to configure physical switch ports based on the connected devi
   * **Use Case:** A smart device hosting multiple networks simultaneously, such as a Hyper-V Server, a Wi-Fi Access Point broadcasting multiple SSIDs, or an uplink to another switch.
   * **Configuration:** Set the *Primary Network* to **Default** (Native) and ensure *Traffic Restriction* is unchecked to allow all tagged VLANs to pass through.
   * **How it works:** The management IP uses the untagged Default network, while the other networks pass through with their tags intact so the smart device (like the Hyper-V virtual switch or Access Point) can sort them out and route them accordingly.
+### 6. Wireless Networks & Security
+In an enterprise environment, end-users should never connect directly to the Management network (Default VLAN 1). Wi-Fi networks must be segmented using VLANs and isolated based on their required access levels.
+
+* **Employee Wi-Fi (Internal Access):**
+  1. Navigate to **Settings > WiFi > Create New WiFi Network**.
+  2. Set Name (e.g., `TodTech`) and Password.
+  3. **Network:** Assign to the Clients VLAN (e.g., VLAN 20). 
+  4. **Security:** Ensure *Client Device Isolation* is disabled. 
+  5. **Routing:** Rely on the core router's Inter-LAN routing matrix to allow this VLAN to communicate with the Servers VLAN.
+
+* **Guest Wi-Fi (Internet Only / Strict Isolation):**
+  1. Create a new WiFi Network (e.g., `TodTech-Guest`).
+  2. **Network:** Assign to the Guest/Voice VLAN (e.g., VLAN 30).
+  3. **Layer 2 Isolation (UniFi):** In Advanced settings (set to Manual), enable **Client Device Isolation** to prevent guest devices from communicating with each other over the air.
+  4. **Layer 3 Isolation (DrayTek / Core Router):** Open the DrayTek Inter-LAN Routing matrix. Uncheck the intersection boxes between the Guest LAN (e.g., LAN 4) and the internal networks (LAN 2, LAN 3) to physically drop traffic attempting to cross subnets. Leave the intersection with LAN 1 (WAN) checked so guests can reach the internet.

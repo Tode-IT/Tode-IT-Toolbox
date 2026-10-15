@@ -110,3 +110,20 @@ In an enterprise environment, end-users should never connect directly to the Man
   2. **Network:** Assign to the Guest/Voice VLAN (e.g., VLAN 30).
   3. **Layer 2 Isolation (UniFi):** In Advanced settings (set to Manual), enable **Client Device Isolation** to prevent guest devices from communicating with each other over the air.
   4. **Layer 3 Isolation (DrayTek / Core Router):** Open the DrayTek Inter-LAN Routing matrix. Uncheck the intersection boxes between the Guest LAN (e.g., LAN 4) and the internal networks (LAN 2, LAN 3) to physically drop traffic attempting to cross subnets. Leave the intersection with LAN 1 (WAN) checked so guests can reach the internet.
+     ---
+
+### 7. Enterprise Operations & Maintenance
+Standard operating procedures for scaling configurations, protecting uptime, and preventing lockouts.
+
+* **Bulk Configuration via Port Profiles:**
+  1. Navigate to **Settings > Profiles > Ethernet Ports > Create New**.
+  2. Define the template (e.g., *Name:* `Standard-Desk`, *Native VLAN:* `Clients (20)`, *Tagged VLAN:* `Custom -> Voice (30)`).
+  3. Open **Devices > [Switch] > Port Manager**, select multiple ports simultaneously, toggle **Port Profile** ON, and apply the template.
+
+* **Configuration Backups (Disaster Recovery):**
+  * **Download:** Go to **Settings > System > Backups > Download**. Select **Settings Only** to generate a lightweight `.unf` file before making major infrastructure changes.
+  * **Restore:** Go to **Settings > System > Backups > Restore** and upload the `.unf` file.
+
+* **Critical Hardware Safeguards:**
+  * **Uplink & Crash Cart Rule:** Always leave the Router Uplink port and one dedicated physical port (e.g., Port 24 labeled `MGMT`) set to **Native VLAN: Default (1)**. Changing the uplink Native VLAN will sever controller communication and require a physical factory reset.
+  * **Firmware Update Order:** Never use "Update All" during business hours. Always update from the edge inward: **Access Points ➔ Downstream Switches ➔ Core Uplink Switch**.

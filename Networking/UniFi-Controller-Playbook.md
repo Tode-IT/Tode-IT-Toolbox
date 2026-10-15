@@ -109,7 +109,8 @@ In an enterprise environment, end-users should never connect directly to the Man
   1. Create a new WiFi Network (e.g., `TodTech-Guest`).
   2. **Network:** Assign to the Guest/Voice VLAN (e.g., VLAN 30).
   3. **Layer 2 Isolation (UniFi):** In Advanced settings (set to Manual), enable **Client Device Isolation** to prevent guest devices from communicating with each other over the air.
-  4. **Layer 3 Isolation (DrayTek / Core Router):** Open the DrayTek Inter-LAN Routing matrix. Uncheck the intersection boxes between the Guest LAN (e.g., LAN 4) and the internal networks (LAN 2, LAN 3) to physically drop traffic attempting to cross subnets. Leave the intersection with LAN 1 (WAN) checked so guests can reach the internet.
+  4. **Layer 3 Isolation (DrayTek / Core Router):** Open the DrayTek Inter-LAN Routing matrix. Uncheck the intersection boxes between the Guest LAN (e.g., LAN 4) and the internal networks (LAN 2, LAN 3) to physically drop traffic attempting to cross subnets[cite: 7]. Leave the intersection with LAN 1 (WAN) checked so guests can reach the internet
+
      ---
 
 ### 7. Enterprise Operations & Maintenance

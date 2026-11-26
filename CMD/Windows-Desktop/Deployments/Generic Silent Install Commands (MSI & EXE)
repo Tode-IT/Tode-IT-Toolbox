@@ -1,0 +1,67 @@
+# Generic Silent Install Commands (MSI & EXE)
+
+Standard one-liners for remote `SYSTEM` shells (ScreenConnect, NinjaOne, etc.) to install software from a local folder or direct URL without UAC prompts.
+
+---
+
+## 1. MSI Installers (CMD)
+
+```cmd
+:: Install from a local path
+msiexec.exe /i "C:\Temp\installer.msi" /qn /norestart
+
+:: Install directly from a URL
+msiexec.exe /i "[https://example.com/installer.msi](https://example.com/installer.msi)" /qn /norestart
+
+:: Download via curl, install silently, then delete the installer (best for redirects/proxies)
+curl.exe -L "[https://example.com/installer.msi](https://example.com/installer.msi)" -o "C:\Windows\Temp\installer.msi" && msiexec.exe /i "C:\Windows\Temp\installer.msi" /qn /norestart && del "C:\Windows\Temp\installer.msi"
+
+:: Install with verbose logging (for troubleshooting failed installs)
+msiexec.exe /i "C:\Temp\installer.msi" /qn /norestart /l*v "C:\Windows\Temp\msi_install.log"
+```
+
+---
+
+## 2. EXE Installers (CMD)
+
+> Unlike MSI files, silent flags depend on how the vendor packaged the `.exe`. Use `start /wait ""` when chaining cleanup commands so CMD waits for the installer to finish before deleting it.
+
+```cmd
+:: Install from a local path (replace --quiet with the vendor's silent switch)
+"C:\Temp\installer.exe" --quiet
+
+:: Install from a local path and wait until completion
+start /wait "" "C:\Temp\installer.exe" /S
+
+:: Download via curl, install silently, wait, then delete the installer
+curl.exe -L "[https://example.com/installer.exe](https://example.com/installer.exe)" -o "C:\Windows\Temp\installer.exe" && start /wait "" "C:\Windows\Temp\installer.exe" /S && del "C:\Windows\Temp\installer.exe"
+
+:: Check supported switches on an unknown EXE (run interactively)
+"C:\Temp\installer.exe" /?
+```
+
+### Common EXE Silent Switches
+
+| Installer Type | Silent Switch | Notes |
+| :--- | :--- | :--- |
+| **NSIS** | `/S` | Case-sensitive (uppercase `S`) |
+| **Inno Setup** | `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` | `/SILENT` shows progress bar |
+| **InstallShield** | `/s /v"/qn"` | Passes `/qn` to wrapped MSI |
+| **WiX / Burn** | `/quiet /norestart` | Common for Microsoft runtimes |
+| **Custom / Modern** | `--quiet` or `--silent` | Used by tools like Sophos |
+
+---
+
+## 3. PowerShell Equivalents (URL Download + Silent Install)
+
+```powershell
+# MSI from URL
+Invoke-WebRequest -Uri "[https://example.com/installer.msi](https://example.com/installer.msi)" -OutFile "C:\Windows\Temp\installer.msi"
+Start-Process msiexec.exe -ArgumentList '/i "C:\Windows\Temp\installer.msi" /qn /norestart' -Wait
+Remove-Item "C:\Windows\Temp\installer.msi" -Force
+
+# EXE from URL
+Invoke-WebRequest -Uri "[https://example.com/installer.exe](https://example.com/installer.exe)" -OutFile "C:\Windows\Temp\installer.exe"
+Start-Process "C:\Windows\Temp\installer.exe" -ArgumentList "/S" -Wait
+Remove-Item "C:\Windows\Temp\installer.exe" -Force
+```
